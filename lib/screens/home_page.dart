@@ -8,10 +8,10 @@ import 'login_screen.dart';
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
 
-  _logout() async {
-    SharedPreferences sharedPreference = await SharedPreferences.getInstance();
-    await sharedPreference.remove('token');
-  }
+  // _logout() async {
+  //   SharedPreferences sharedPreference = await SharedPreferences.getInstance();
+  //   await sharedPreference.remove('token');
+  // }
 
   @override
   Widget build(BuildContext context) {

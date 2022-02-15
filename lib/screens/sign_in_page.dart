@@ -76,11 +76,11 @@ class SignInPage extends StatelessWidget {
                   child: const Text(
                     'Entrar',
                   ),
-                  onPressed: ()  {
+                  onPressed: () async  {
 
                     FocusScopeNode currentFocus = FocusScope.of(context);
                     if(_formKey.currentState!.validate()){
-                      context.read<AuthenticationService>().signIn(
+                      await context.read<AuthenticationService>().signIn(
                         email: _emailController.text,
                         password: _passController.text,
                       );
@@ -89,10 +89,9 @@ class SignInPage extends StatelessWidget {
                         currentFocus.unfocus();
                       }
 
-                      Provider.of<User?>(context, listen: false);
-                      final firebaseUser = context.watch<User?>();
+                      //final firebaseUser = context.watch<User?>();
 
-                      if(firebaseUser == null){
+                      if(FirebaseAuth.instance.currentUser == null){
                         _passController.clear();
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       }
