@@ -1,18 +1,11 @@
-import 'dart:convert';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-import 'package:stephanie_nutri/authetication_services.dart';
+import 'package:provider/provider.dart';
 
+import '../authetication_services.dart';
 import 'home_page.dart';
 
-class LoginScreen extends StatefulWidget {
-  @override
-  _LoginScreenState createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends State<LoginScreen> {
+class SignInPage extends StatelessWidget {
   final _emailController = TextEditingController();
   final _passController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
@@ -20,51 +13,16 @@ class _LoginScreenState extends State<LoginScreen> {
   final snackBar = SnackBar(content: Text('E-mail ou senha são inválidos', textAlign: TextAlign.center,));
 
   @override
-  initState(){
-    super.initState();
-    _verifyToken().then((value){
-      if(value){
-        Navigator.pushReplacement(context,
-        MaterialPageRoute(builder: (context) => HomePage()),);
-      }
-    });
-  }
-
-
-  Future<bool> _verifyToken() async {
-    SharedPreferences sharedPreference = await SharedPreferences.getInstance();
-    return sharedPreference.getString('token') != null;
-  }
-
-  Future<bool> _login() async{
-    SharedPreferences sharedPreference = await SharedPreferences.getInstance();
-    var url = Uri.parse('https://620a9e5792946600171c5bc8.mockapi.io/api/v1/login');
-    var resp = await http.post(url,
-    body: {
-      'username': _emailController.text,
-      'password': _passController.text
-    });
-
-    if(resp.statusCode == 200 || resp.statusCode == 201){
-      await sharedPreference.setString('token', jsonDecode(resp.body)['token']);
-      return true;
-    } else {
-      return false;
-    }
-
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
       body:
-          // if (model.isLoading) {
-          //   return Center(
-          //     child: CircularProgressIndicator(),
-          //   );
-          // }
-          SafeArea(
+      // if (model.isLoading) {
+      //   return Center(
+      //     child: CircularProgressIndicator(),
+      //   );
+      // }
+      SafeArea(
         child: Form(
           key: _formKey,
           child: ListView(
@@ -102,13 +60,13 @@ class _LoginScreenState extends State<LoginScreen> {
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: _login,
+                  onPressed: null,
                   child: const Text(
                     'Esqueci minha senha',
                     style: TextStyle(
-                        fontFamily: 'Merriweather',
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,),
+                      fontFamily: 'Merriweather',
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,),
                   ),
                 ),
               ),
@@ -118,19 +76,23 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: const Text(
                     'Entrar',
                   ),
-                  onPressed: () async {
+                  onPressed: ()  {
+
                     FocusScopeNode currentFocus = FocusScope.of(context);
                     if(_formKey.currentState!.validate()){
-                      bool isLoggedIn = await _login();
+                      context.read<AuthenticationService>().signIn(
+                        email: _emailController.text,
+                        password: _passController.text,
+                      );
 
                       if(!currentFocus.hasPrimaryFocus){
                         currentFocus.unfocus();
                       }
 
-                      if(isLoggedIn){
-                        Navigator.pushReplacement(context,
-                          MaterialPageRoute(builder: (context) => HomePage()),);
-                      } else {
+                      Provider.of<User?>(context, listen: false);
+                      final firebaseUser = context.watch<User?>();
+
+                      if(firebaseUser == null){
                         _passController.clear();
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       }

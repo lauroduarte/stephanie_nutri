@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 
+import '../authetication_services.dart';
 import 'login_screen.dart';
 
 class HomePage extends StatelessWidget {
@@ -19,12 +21,13 @@ class HomePage extends StatelessWidget {
           children: [
             Text('Home Page'),
             ElevatedButton(
-                onPressed: () async {
-                  await _logout();
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => LoginScreen()),
-                  );
+                onPressed: () {
+                  // await _logout();
+                  context.read<AuthenticationService>().signOut();
+                  // Navigator.pushReplacement(
+                  //   context,
+                  //   MaterialPageRoute(builder: (context) => LoginScreen()),
+                  // );
                 },
                 child: Text('Voltar')),
           ],
