@@ -1,20 +1,22 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:stephanie_nutri/screens/forgot_password.dart';
 
 import '../services/authentication_services.dart';
-import 'home_page.dart';
 
 class SignInPage extends StatelessWidget {
   final _emailController = TextEditingController();
   final _passController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  final snackBar = SnackBar(
+  final snackBar = const SnackBar(
       content: Text(
     'E-mail ou senha são inválidos',
     textAlign: TextAlign.center,
   ));
+
+  SignInPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +65,12 @@ class SignInPage extends StatelessWidget {
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: null,
+                  onPressed: (){
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ForgotPassword()),
+                    );
+                  },
                   child: const Text(
                     'Esqueci minha senha',
                     style: TextStyle(
@@ -112,7 +119,7 @@ class SignInPage extends StatelessWidget {
                       ScaffoldMessenger.of(context).showSnackBar(snackBar);
                     }
                   },
-                  child: Text('Sign in with Google')),
+                  child: const Text('Sign in with Google')),
               ElevatedButton(
                   onPressed: () async {
                     await context
@@ -122,7 +129,8 @@ class SignInPage extends StatelessWidget {
                       _passController.clear();
                       ScaffoldMessenger.of(context).showSnackBar(snackBar);
                     }
-                  }, child: Text('Sign in with Facebook')),
+                  },
+                  child: const Text('Sign in with Facebook')),
             ],
           ),
         ),
