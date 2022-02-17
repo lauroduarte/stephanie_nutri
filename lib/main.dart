@@ -2,11 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:stephanie_nutri/authetication_services.dart';
+import 'package:stephanie_nutri/services/authentication_services.dart';
 import 'package:stephanie_nutri/screens/home_page.dart';
-import 'package:stephanie_nutri/screens/login_screen.dart';
 import 'package:stephanie_nutri/screens/sign_in_page.dart';
-import 'package:stephanie_nutri/theme.dart';
+import 'package:stephanie_nutri/themes/theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,7 +24,11 @@ class MyApp extends StatelessWidget {
         Provider<AuthenticationService>(
           create: (_) => AuthenticationService(FirebaseAuth.instance),
         ),
-        StreamProvider(initialData: null,create: (context) => context.read<AuthenticationService>().authStateChanges,)
+        StreamProvider(
+          initialData: null,
+          create: (context) =>
+              context.read<AuthenticationService>().authStateChanges,
+        )
       ],
       child: MaterialApp(
         title: 'Stephanie Nutri',
@@ -42,7 +45,7 @@ class AuthenticationWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User?>();
-    if(firebaseUser != null){
+    if (firebaseUser != null) {
       return HomePage();
     }
     return SignInPage();
