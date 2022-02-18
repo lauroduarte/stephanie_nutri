@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stephanie_nutri/screens/forgot_password.dart';
+import 'package:stephanie_nutri/services/users_services.dart';
 
 import '../services/authentication_services.dart';
 
@@ -98,8 +99,6 @@ class SignInPage extends StatelessWidget {
                       if (!currentFocus.hasPrimaryFocus) {
                         currentFocus.unfocus();
                       }
-
-                      //final firebaseUser = context.watch<User?>();
 
                       if (FirebaseAuth.instance.currentUser == null) {
                         _passController.clear();

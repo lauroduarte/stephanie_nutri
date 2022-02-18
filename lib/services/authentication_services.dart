@@ -55,8 +55,11 @@ class AuthenticationService {
         idToken: googleAuth?.idToken,
       );
 
-      await FirebaseAuth.instance.signInWithCredential(credential);
-      // Once signed in, return the UserCredential
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+
+      //TODO: Verificar se usuário existe no banco de dados e salvar caso ainda não exista
+
       return 'Signed Up Wiht Google';
     } on Exception catch (e) {
       return e.toString();
@@ -82,13 +85,12 @@ class AuthenticationService {
   }
 
   Future<String?> sendPasswordResetEmail(String email) async {
-    try{
+    try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
 
       return 'Password Reset E-mail sent';
-    } on Exception catch(e){
+    } on Exception catch (e) {
       return e.toString();
     }
-
   }
 }

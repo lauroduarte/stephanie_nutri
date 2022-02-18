@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:stephanie_nutri/services/authentication_services.dart';
 import 'package:stephanie_nutri/screens/home_page.dart';
 import 'package:stephanie_nutri/screens/sign_in_page.dart';
+import 'package:stephanie_nutri/services/users_services.dart';
 import 'package:stephanie_nutri/themes/theme.dart';
 
 Future<void> main() async {
@@ -23,6 +24,9 @@ class MyApp extends StatelessWidget {
       providers: [
         Provider<AuthenticationService>(
           create: (_) => AuthenticationService(FirebaseAuth.instance),
+        ),
+        Provider<UserService>(
+          create: (_)=> UserService(),
         ),
         StreamProvider(
           initialData: null,
