@@ -1,9 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:stephanie_nutri/services/users_services.dart';
+
+import '../models/app_user.dart';
 
 class AuthenticationService {
   final FirebaseAuth _firebaseAuth;
+  final UserService _userService = UserService();
 
   AuthenticationService(this._firebaseAuth);
 
@@ -59,6 +63,24 @@ class AuthenticationService {
           await FirebaseAuth.instance.signInWithCredential(credential);
 
       //TODO: Verificar se usuário existe no banco de dados e salvar caso ainda não exista
+      AppUser? appUser;
+      if(userCredential != null && userCredential.user != null) {
+        appUser = await _userService.getUserByUid(userCredential.user!.uid);
+
+        if (appUser == null){
+          _userService.saveUser(
+              email: userCredential.user!.email,
+              uid: userCredential.user!.uid,
+              displayName: userCredential.user!.displayName,
+              fullName: userCredential.user!.displayName,
+              emailVerified: userCredential.user!.emailVerified,
+              phoneNumber:userCredential.user!.phoneNumber,
+              photoURL: userCredential.user!.photoURL
+          );
+        }
+      }
+
+
 
       return 'Signed Up Wiht Google';
     } on Exception catch (e) {

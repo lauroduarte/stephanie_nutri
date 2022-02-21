@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stephanie_nutri/services/authentication_services.dart';
 import 'package:stephanie_nutri/screens/home_page.dart';
-import 'package:stephanie_nutri/screens/sign_in_page.dart';
+import 'package:stephanie_nutri/screens/sign_in.dart';
 import 'package:stephanie_nutri/services/users_services.dart';
 import 'package:stephanie_nutri/themes/theme.dart';
 
@@ -52,6 +52,6 @@ class AuthenticationWrapper extends StatelessWidget {
     if (firebaseUser != null) {
       return HomePage();
     }
-    return SignInPage();
+    return SignIn();
   }
 }

@@ -2,11 +2,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stephanie_nutri/screens/forgot_password.dart';
+import 'package:stephanie_nutri/screens/sign_up.dart';
 import 'package:stephanie_nutri/services/users_services.dart';
 
 import '../services/authentication_services.dart';
 
-class SignInPage extends StatelessWidget {
+class SignIn extends StatelessWidget {
   final _emailController = TextEditingController();
   final _passController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
@@ -17,19 +18,13 @@ class SignInPage extends StatelessWidget {
     textAlign: TextAlign.center,
   ));
 
-  SignInPage({Key? key}) : super(key: key);
+  SignIn({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      body:
-          // if (model.isLoading) {
-          //   return Center(
-          //     child: CircularProgressIndicator(),
-          //   );
-          // }
-          SafeArea(
+      body: SafeArea(
         child: Form(
           key: _formKey,
           child: ListView(
@@ -66,7 +61,7 @@ class SignInPage extends StatelessWidget {
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: (){
+                  onPressed: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => ForgotPassword()),
@@ -83,7 +78,7 @@ class SignInPage extends StatelessWidget {
                 ),
               ),
               SizedBox(
-                height: 50,
+                height: 40,
                 child: ElevatedButton(
                   child: const Text(
                     'Entrar',
@@ -108,28 +103,53 @@ class SignInPage extends StatelessWidget {
                   },
                 ),
               ),
-              ElevatedButton(
-                  onPressed: () async {
-                    await context
-                        .read<AuthenticationService>()
-                        .signInWithGoogle();
-                    if (FirebaseAuth.instance.currentUser == null) {
-                      _passController.clear();
-                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                    }
-                  },
-                  child: const Text('Sign in with Google')),
-              ElevatedButton(
-                  onPressed: () async {
-                    await context
-                        .read<AuthenticationService>()
-                        .signInWithGoogle();
-                    if (FirebaseAuth.instance.currentUser == null) {
-                      _passController.clear();
-                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                    }
-                  },
-                  child: const Text('Sign in with Facebook')),
+              Center(
+                child: Text('ou entre com'),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    onPressed: () async {
+                      await context
+                          .read<AuthenticationService>()
+                          .signInWithGoogle();
+                      if (FirebaseAuth.instance.currentUser == null) {
+                        _passController.clear();
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      }
+                    },
+                    icon: Icon(Icons.g_mobiledata_outlined),
+                  ),
+                  IconButton(
+                    onPressed: () async {
+                      await context
+                          .read<AuthenticationService>()
+                          .signInWithGoogle();
+                      if (FirebaseAuth.instance.currentUser == null) {
+                        _passController.clear();
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      }
+                    },
+                    icon: const Icon(Icons.facebook),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Text('Ainda não é cadastrado? '),
+                  TextButton(
+                    child: Text('Cadastre-se.'),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SignUp()),
+                      );
+                    },
+                  ),
+                ],
+              ),
             ],
           ),
         ),
