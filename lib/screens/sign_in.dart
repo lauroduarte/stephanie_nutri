@@ -5,7 +5,7 @@ import 'package:stephanie_nutri/screens/forgot_password.dart';
 import 'package:stephanie_nutri/screens/sign_up.dart';
 import 'package:stephanie_nutri/services/users_services.dart';
 
-import '../exception/app_exception.dart';
+import '../exceptions/app_exception.dart';
 import '../services/authentication_services.dart';
 
 class SignIn extends StatelessWidget {

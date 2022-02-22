@@ -3,7 +3,7 @@ import 'package:group_button/group_button.dart';
 import 'package:provider/provider.dart';
 import 'package:stephanie_nutri/services/authentication_services.dart';
 
-import '../exception/app_exception.dart';
+import '../exceptions/app_exception.dart';
 import '../utils/cpf_validator.dart';
 
 class SignUp extends StatelessWidget {
