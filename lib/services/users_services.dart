@@ -32,10 +32,8 @@ class UserService {
 
     DocumentReference userRef = _users.doc(uid);
 
-    await userRef
-        .set(data)
-        .whenComplete(() => print("Notes item added to the database"))
-        .catchError((e) => print(e));
+    await userRef.set(data);
+
     return 'User saved';
   }
 

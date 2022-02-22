@@ -4,7 +4,7 @@ class AppUser {
   final String? displayName;
   final String? fullName;
   final String? email;
-  final String? emailVerified;
+  final bool? emailVerified;
   final String? phoneNumber;
   final String? photoURL;
   final String? uid;

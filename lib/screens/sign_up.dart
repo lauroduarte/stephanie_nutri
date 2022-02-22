@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:group_button/group_button.dart';
+import 'package:provider/provider.dart';
+import 'package:stephanie_nutri/services/authentication_services.dart';
 
+import '../exception/app_exception.dart';
 import '../utils/cpf_validator.dart';
 
 class SignUp extends StatelessWidget {
   SignUp({Key? key}) : super(key: key);
 
-  List<String> _genders = ['Masculino', 'Feminino', 'Outros'];
+  final List<String> _genders = ['Masculino', 'Feminino', 'Outros'];
 
   final _displayNameController = TextEditingController();
   final _fullNameController = TextEditingController();
@@ -14,6 +17,7 @@ class SignUp extends StatelessWidget {
   final _phoneNumberController = TextEditingController();
   final _cpfController = TextEditingController();
   final _birthDateController = TextEditingController();
+  final _passwordController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -37,6 +41,22 @@ class SignUp extends StatelessWidget {
                 validator: (text) {
                   if (text == null || text.isEmpty || !text.contains('@')) {
                     return 'E-mail inválido';
+                  } else {
+                    return null;
+                  }
+                }),
+            TextFormField(
+                controller: _passwordController,
+                decoration: const InputDecoration(hintText: 'Senha'),
+                obscureText: true,
+                enableSuggestions: false,
+                autocorrect: false,
+                keyboardType: TextInputType.visiblePassword,
+                validator: (text) {
+                  if (text == null || text.isEmpty) {
+                    return 'Senha inválida';
+                  } else if (text.length < 8) {
+                    return 'A senha precisa conter no mínimo 8 caracteres';
                   } else {
                     return null;
                   }
@@ -126,8 +146,34 @@ class SignUp extends StatelessWidget {
               height: 40,
               child: ElevatedButton(
                 child: Text('Cadastrar'),
-                onPressed: () {
-                  _formKey.currentState!.validate();
+                onPressed: () async {
+                  if(_formKey.currentState!.validate()){
+                    try {
+                      await context.read<AuthenticationService>().signUp(
+                        email: _emailController.text,
+                        password: _passwordController.text,
+                        birthDate: _birthDateController.text,
+                        photoURL: '',
+                        phoneNumber: _phoneNumberController.text,
+                        fullName: _fullNameController.text,
+                        displayName: _displayNameController.text,
+                        cpf: _cpfController.text,
+                        gender: _selectedGender,
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: const Text(
+                            'Cadastro efetuado com sucesso',
+                            textAlign: TextAlign.center,
+                          )));
+                      Navigator.of(context).pop();
+                    } on AppException catch(e){
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(
+                            e.message!,
+                            textAlign: TextAlign.center,
+                          )));
+                    }
+                  }
                 },
               ),
             )

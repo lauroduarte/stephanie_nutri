@@ -5,6 +5,7 @@ import 'package:stephanie_nutri/screens/forgot_password.dart';
 import 'package:stephanie_nutri/screens/sign_up.dart';
 import 'package:stephanie_nutri/services/users_services.dart';
 
+import '../exception/app_exception.dart';
 import '../services/authentication_services.dart';
 
 class SignIn extends StatelessWidget {
@@ -86,16 +87,18 @@ class SignIn extends StatelessWidget {
                   onPressed: () async {
                     FocusScopeNode currentFocus = FocusScope.of(context);
                     if (_formKey.currentState!.validate()) {
-                      await context.read<AuthenticationService>().signIn(
-                            email: _emailController.text,
-                            password: _passController.text,
-                          );
 
-                      if (!currentFocus.hasPrimaryFocus) {
-                        currentFocus.unfocus();
-                      }
+                      try {
+                        await context.read<AuthenticationService>().signIn(
+                          email: _emailController.text,
+                          password: _passController.text,
+                        );
 
-                      if (FirebaseAuth.instance.currentUser == null) {
+
+                      } on AppException catch(e){
+                        if (!currentFocus.hasPrimaryFocus) {
+                          currentFocus.unfocus();
+                        }
                         _passController.clear();
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       }

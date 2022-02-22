@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:stephanie_nutri/exception/app_exception.dart';
 import 'package:stephanie_nutri/services/users_services.dart';
 
 import '../models/app_user.dart';
@@ -13,38 +14,60 @@ class AuthenticationService {
 
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
 
-  Future<String?> signIn(
+  Future<void> signIn(
       {required String email, required String password}) async {
     try {
       await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
-      return 'Signed In';
     } on FirebaseAuthException catch (e) {
-      return e.message;
-    }
+      throw AppException.fromFirebaseAuth(e);
+    } on FirebaseException catch (e){
+      throw AppException.fromFirebase(e);
+    } //TODO tratar exceções no geral
   }
 
-  Future<String?> signOut() async {
+  Future<void> signOut() async {
     try {
       await _firebaseAuth.signOut();
-      return 'Signed Out';
     } on FirebaseAuthException catch (e) {
-      return e.message;
-    }
+      throw AppException.fromFirebaseAuth(e);
+    } on FirebaseException catch (e){
+      throw AppException.fromFirebase(e);
+    } //TODO tratar exceções no geral
   }
 
-  Future<String?> signUp(
-      {required String email, required String password}) async {
+  Future<void> signUp(
+      {required String email, required String password,
+        String? displayName,
+        String? fullName,
+        String? phoneNumber,
+        String? photoURL,
+        String? cpf,
+        String? birthDate,
+        String? gender}) async {
     try {
-      await _firebaseAuth.createUserWithEmailAndPassword(
+      UserCredential _userCredential =  await _firebaseAuth.createUserWithEmailAndPassword(
           email: email, password: password);
-      return 'Signed Up';
+
+      await _userService.saveUser(email: email,
+          uid: _userCredential.user!.uid,
+        displayName: displayName,
+        fullName: fullName,
+        emailVerified: _userCredential.user!.emailVerified,
+        phoneNumber: phoneNumber,
+        photoURL: photoURL,
+        cpf: cpf,
+        birthDate: birthDate,
+        gender: gender
+      );
     } on FirebaseAuthException catch (e) {
-      return e.message;
-    }
+      throw AppException.fromFirebaseAuth(e);
+    } on FirebaseException catch (e){
+      throw AppException.fromFirebase(e);
+    } //TODO tratar exceções no geral
   }
 
-  Future<String?> signInWithGoogle() async {
+  Future<void> signInWithGoogle() async {
     try {
       // Trigger the authentication flow
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
@@ -62,33 +85,17 @@ class AuthenticationService {
       UserCredential userCredential =
           await FirebaseAuth.instance.signInWithCredential(credential);
 
-      //TODO: Verificar se usuário existe no banco de dados e salvar caso ainda não exista
-      AppUser? appUser;
-      if(userCredential != null && userCredential.user != null) {
-        appUser = await _userService.getUserByUid(userCredential.user!.uid);
+      //Salva o usuário caso não exista na base
+      await saveUser(userCredential);
 
-        if (appUser == null){
-          _userService.saveUser(
-              email: userCredential.user!.email,
-              uid: userCredential.user!.uid,
-              displayName: userCredential.user!.displayName,
-              fullName: userCredential.user!.displayName,
-              emailVerified: userCredential.user!.emailVerified,
-              phoneNumber:userCredential.user!.phoneNumber,
-              photoURL: userCredential.user!.photoURL
-          );
-        }
-      }
-
-
-
-      return 'Signed Up Wiht Google';
-    } on Exception catch (e) {
-      return e.toString();
-    }
+    } on FirebaseAuthException catch (e) {
+      throw AppException.fromFirebaseAuth(e);
+    } on FirebaseException catch (e){
+      throw AppException.fromFirebase(e);
+    } //TODO tratar exceções no geral
   }
 
-  Future<String?> signInWithFacebook() async {
+  Future<void> signInWithFacebook() async {
     try {
       // Trigger the sign-in flow
       final LoginResult loginResult = await FacebookAuth.instance.login();
@@ -98,21 +105,46 @@ class AuthenticationService {
           FacebookAuthProvider.credential(loginResult.accessToken!.token);
 
       // Once signed in, return the UserCredential
-      await FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithCredential(facebookAuthCredential);
 
-      return 'Signed In With Facebook';
-    } on Exception catch (e) {
-      return e.toString();
-    }
+      //Salva o usuário caso não exista na base
+      await saveUser(userCredential);
+
+    } on FirebaseAuthException catch (e) {
+      throw AppException.fromFirebaseAuth(e);
+    } on FirebaseException catch (e){
+      throw AppException.fromFirebase(e);
+    } //TODO tratar exceções no geral
   }
 
-  Future<String?> sendPasswordResetEmail(String email) async {
-    try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
 
-      return 'Password Reset E-mail sent';
-    } on Exception catch (e) {
-      return e.toString();
+  Future<void> sendPasswordResetEmail(String email) async {
+    try {
+      await _firebaseAuth.sendPasswordResetEmail(email: email);
+    } on FirebaseAuthException catch (e) {
+      throw AppException.fromFirebaseAuth(e);
+    } on FirebaseException catch (e){
+      throw AppException.fromFirebase(e);
+    } //TODO tratar exceções no geral
+  }
+
+  Future<void> saveUser(UserCredential userCredential) async {
+    //Verifica se usuário existe no banco de dados e salvar caso ainda não exista
+    AppUser? appUser;
+    if (userCredential != null && userCredential.user != null) {
+      appUser = await _userService.getUserByUid(userCredential.user!.uid);
+
+      if (appUser == null) {
+        _userService.saveUser(
+            email: userCredential.user!.email,
+            uid: userCredential.user!.uid,
+            displayName: userCredential.user!.displayName,
+            fullName: userCredential.user!.displayName,
+            emailVerified: userCredential.user!.emailVerified,
+            phoneNumber: userCredential.user!.phoneNumber,
+            photoURL: userCredential.user!.photoURL);
+      }
     }
   }
 }
