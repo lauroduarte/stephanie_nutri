@@ -9,15 +9,18 @@ class AppException implements Exception {
   AppException.fromFirebaseAuth(FirebaseAuthException firebaseAuthException){
     errorCode = firebaseAuthException.code;
 
-    if(errorCode == 'auth/invalid-email'){
+    if(errorCode == 'invalid-email'){
       message = 'O e-mail informado é inválido';
-    } else if (errorCode == 'auth/user-disabled'){
+    } else if (errorCode == 'user-disabled'){
       message = 'Usuário bloqueado';
-    } else if (errorCode == 'auth/user-not-found' || errorCode == 'auth/wrong-password') {
+    } else if (errorCode == 'user-not-found' || errorCode == 'wrong-password') {
       message = 'Usuário inexistente';
     } else if (errorCode == 'email-already-in-use'){
       message = 'E-mail já registrado';
-    } else {
+    } else if (errorCode == 'account-exists-with-different-credential'){
+      message = 'Você já possui acesso ao app';
+    }
+    else {
       message = 'Erro ao tentar autenticar o usuário';
     }
 

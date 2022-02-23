@@ -100,18 +100,28 @@ class AuthenticationService {
       // Trigger the sign-in flow
       final LoginResult loginResult = await FacebookAuth.instance.login();
 
-      // Create a credential from the access token
-      final OAuthCredential facebookAuthCredential =
-          FacebookAuthProvider.credential(loginResult.accessToken!.token);
+      if(loginResult.status == LoginStatus.success) {
+        // Create a credential from the access token
+        final OAuthCredential facebookAuthCredential =
+        FacebookAuthProvider.credential(loginResult.accessToken!.token);
 
-      // Once signed in, return the UserCredential
-      UserCredential userCredential = await FirebaseAuth.instance
-          .signInWithCredential(facebookAuthCredential);
+        // Once signed in, return the UserCredential
+        UserCredential userCredential = await FirebaseAuth.instance
+            .signInWithCredential(facebookAuthCredential);
 
-      //Salva o usuário caso não exista na base
-      await saveUser(userCredential);
+        //Salva o usuário caso não exista na base
+        await saveUser(userCredential);
+      } else if(loginResult.status == LoginStatus.failed){
+        print('passou');
+        throw AppException(message: 'Não foi possível realizar o login');
+      }
 
     } on FirebaseAuthException catch (e) {
+      //If Account exists with different credential send the correct message
+      if(e.code == 'account-exists-with-different-credential'){
+        List<String> signInMethods =  await _firebaseAuth.fetchSignInMethodsForEmail(e.email!);
+        throw AppException(message: 'Você já possui uma conta, favor acessar usando ${signInMethods.join(', ')}');
+      }
       throw AppException.fromFirebaseAuth(e);
     } on FirebaseException catch (e){
       throw AppException.fromFirebase(e);
