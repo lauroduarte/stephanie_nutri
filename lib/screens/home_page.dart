@@ -1,35 +1,52 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:stephanie_nutri/screens/appointments.dart';
+import 'package:stephanie_nutri/screens/welcome.dart';
 
 import '../services/authentication_services.dart';
 
-
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
-  // _logout() async {
-  //   SharedPreferences sharedPreference = await SharedPreferences.getInstance();
-  //   await sharedPreference.remove('token');
-  // }
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
 
+class _HomePageState extends State<HomePage> {
+
+  final _pageOptions = [
+    Welcome(),
+    Appointments(),
+    Welcome(),
+    Welcome(),
+  ];
+
+  int selectedPage = 0;
+
+  // _logout() async {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: Column(
-          children: [
-            Text('Home Page'),
-            ElevatedButton(
-                onPressed: () {
-                  // await _logout();
-                  context.read<AuthenticationService>().signOut();
-                  // Navigator.pushReplacement(
-                  //   context,
-                  //   MaterialPageRoute(builder: (context) => LoginScreen()),
-                  // );
-                },
-                child: Text('Voltar')),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: selectedPage,
+          items: [
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: "Início"),
+            BottomNavigationBarItem(icon: Icon(Icons.calendar_today_rounded), label: "Agenda"),
+            BottomNavigationBarItem(icon: Icon(Icons.chat), label: "Chat"),
+            BottomNavigationBarItem(icon: Icon(Icons.person), label: "Perfil"),
           ],
+          onTap: (index){
+            setState(() {
+              selectedPage = index;
+            });
+          },
+
+        ),
+        body:
+        IndexedStack(
+          index: selectedPage,
+          children: _pageOptions,
         ),
       ),
     );

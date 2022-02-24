@@ -1,16 +1,22 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
+
 import 'package:stephanie_nutri/services/authentication_services.dart';
 import 'package:stephanie_nutri/screens/home_page.dart';
 import 'package:stephanie_nutri/screens/sign_in.dart';
+import 'package:stephanie_nutri/services/booking_services.dart';
 import 'package:stephanie_nutri/services/users_services.dart';
 import 'package:stephanie_nutri/themes/theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await initializeDateFormatting('pt_BR', null);
   runApp(const MyApp());
 }
 
@@ -26,13 +32,20 @@ class MyApp extends StatelessWidget {
           create: (_) => AuthenticationService(FirebaseAuth.instance),
         ),
         Provider<UserService>(
-          create: (_)=> UserService(),
+          create: (_) => UserService(),
+        ),
+        Provider<BookingService>(
+          create: (_) => BookingService(),
         ),
         StreamProvider(
           initialData: null,
           create: (context) =>
               context.read<AuthenticationService>().authStateChanges,
-        )
+        ),
+        StreamProvider<QuerySnapshot?>(
+          create: (context) => context.read<BookingService>().availableDays,
+          initialData: null,
+        ),
       ],
       child: MaterialApp(
         title: 'Stephanie Nutri',

@@ -21,6 +21,7 @@ ThemeData lightThemeData(BuildContext context) {
       primary: kPrimaryColor,
       secondary: kSecondaryColor,
       error: kErrorColor,
+
     ),
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
       backgroundColor: Colors.white,

@@ -1,11 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:stephanie_nutri/models/app_user.dart';
 
-final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-final CollectionReference _users =
-    FirebaseFirestore.instance.collection('users');
+
 
 class UserService {
+
+  final CollectionReference _users =
+  FirebaseFirestore.instance.collection('users');
+
+
   Future<String?> saveUser(
       {displayName,
         fullName,
