@@ -1,29 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:stephanie_nutri/models/time_slot.dart';
 
 class BookingService{
   final CollectionReference _availableTimeSlots = FirebaseFirestore.instance.collection('available_time_slots');
 
-  Future<List<List<int>>> getAvailableTimeSlots(DateTime day) async {
-    List<List<int>> availableTimeSlots = [];
-    QuerySnapshot qSnap = await _availableTimeSlots
-        .where('date', isGreaterThanOrEqualTo: DateTime(day.year, day.month, day.day))
-        .where('date', isLessThan: DateTime(day.year, day.month, day.day + 1))
-        .where('booked', isEqualTo: false)
-        .get();
-    for (var element in qSnap.docs) {
-      availableTimeSlots.add([element['hour'], element['minute']]);
-    }
 
-    print(availableTimeSlots);
-    return availableTimeSlots;
-  }
-
-  Stream<QuerySnapshot> get availableDays {
+  Stream<List<TimeSlot>> get availableTimeSlots {
     DateTime day = DateTime.now();
     return _availableTimeSlots
         .where('date', isGreaterThanOrEqualTo: DateTime(day.year, day.month, day.day))
         .where('booked', isEqualTo: false)
-        .snapshots();
+        .snapshots().map(
+            (e) => e.docs.map((doc) => TimeSlot.fromDocument(doc)).toList());
   }
 
 }

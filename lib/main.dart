@@ -13,6 +13,8 @@ import 'package:stephanie_nutri/services/booking_services.dart';
 import 'package:stephanie_nutri/services/users_services.dart';
 import 'package:stephanie_nutri/themes/theme.dart';
 
+import 'models/time_slot.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -42,9 +44,9 @@ class MyApp extends StatelessWidget {
           create: (context) =>
               context.read<AuthenticationService>().authStateChanges,
         ),
-        StreamProvider<QuerySnapshot?>(
-          create: (context) => context.read<BookingService>().availableDays,
-          initialData: null,
+        StreamProvider<List<TimeSlot>>(
+          create: (context) => context.read<BookingService>().availableTimeSlots,
+          initialData: [],
         ),
       ],
       child: MaterialApp(
