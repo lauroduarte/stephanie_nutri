@@ -8,9 +8,9 @@ class TimeSlot{
   int? minute;
 
   String get asString {
-    return this.hour.toString().padLeft(2, '0') +
+    return hour.toString().padLeft(2, '0') +
         ':' +
-        this.minute.toString().padLeft(2, '0');
+        minute.toString().padLeft(2, '0');
   }
 
   TimeSlot({this.uid, this.booked, this.date, this.hour, this.minute});

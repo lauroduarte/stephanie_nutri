@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:stephanie_nutri/screens/booking_stepper.dart';
 
 import '../services/authentication_services.dart';
 import 'booking.dart';
@@ -28,7 +29,7 @@ class Welcome extends StatelessWidget {
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => Booking())
+                MaterialPageRoute(builder: (context) => BookingStepper())
               );
             },
             child: Text('Agendar'),

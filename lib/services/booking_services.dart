@@ -1,9 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:stephanie_nutri/models/time_slot.dart';
 
-class BookingService{
+class BookingService {
   final CollectionReference _availableTimeSlots = FirebaseFirestore.instance.collection('available_time_slots');
-
 
   Stream<List<TimeSlot>> get availableTimeSlots {
     DateTime day = DateTime.now();
@@ -13,5 +12,4 @@ class BookingService{
         .snapshots().map(
             (e) => e.docs.map((doc) => TimeSlot.fromDocument(doc)).toList());
   }
-
 }

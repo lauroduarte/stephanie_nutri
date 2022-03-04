@@ -1,8 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stephanie_nutri/models/time_slot.dart';
-import 'package:stephanie_nutri/services/booking_services.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class Booking extends StatefulWidget {
@@ -29,7 +27,10 @@ class _BookingState extends State<Booking> {
   @override
   Widget build(BuildContext context) {
     List<TimeSlot> availableDays = context.watch<List<TimeSlot>>();
-    var aTime = availableDays.where((e1)=>isSameDay(e1.date, _selectedDay)).map((e2) => e2.asString).toList();
+    var aTime = availableDays
+        .where((e1) => isSameDay(e1.date, _selectedDay))
+        .map((e2) => e2.asString)
+        .toList();
     aTime.sort();
     _availableSlots = aTime;
 
@@ -48,15 +49,10 @@ class _BookingState extends State<Booking> {
               return isSameDay(_selectedDay, day);
             },
             onDaySelected: (selectedDay, focusedDay) async {
-              //var aTime = availableDays.where((e1)=>isSameDay(e1.date, selectedDay)).map((e2) => e2.asString).toList();
-              //aTime.sort();
               setState(() {
                 _selectedDay = selectedDay;
                 _focusedDay = focusedDay; // update `_focusedDay` here as well
-                //_availableSlots = aTime;
               });
-
-              //_availableSlots.sort();
             },
             calendarFormat: _calendarFormat,
             onFormatChanged: (format) {
@@ -68,11 +64,13 @@ class _BookingState extends State<Booking> {
               _focusedDay = focusedDay;
             },
             eventLoader: (day) {
-              var available = availableDays.map((element) {
-                DateTime eDate = element.date!;
-                if (DateTime(eDate.year, eDate.month, eDate.day) ==
-                    DateTime(day.year, day.month, day.day)) return 'Disponível';
-              })
+              var available = availableDays
+                  .map((element) {
+                    DateTime eDate = element.date!;
+                    if (DateTime(eDate.year, eDate.month, eDate.day) ==
+                        DateTime(day.year, day.month, day.day))
+                      return 'Disponível';
+                  })
                   .where((e) => e != null)
                   .toList();
               return available;
@@ -80,32 +78,20 @@ class _BookingState extends State<Booking> {
           ),
           const SizedBox(height: 8.0),
           Expanded(
-              child: ListView(children: [
-            Text('Selecione um dos horários disponíveis'),
-            ..._availableSlots.map((e) {
-              return ElevatedButton(
-                child: Text(e),
-                onPressed: () {},
-              );
-            }),
-          ])),
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+                  Text('Selecione um dos horários disponíveis'),
+                  ..._availableSlots.map((e) {
+                    return ElevatedButton(
+                      child: Text(e),
+                      onPressed: () {},
+                );
+              }),
+            ],
+          )),
         ],
       ),
     );
   }
-
-  // Future<List<String>> getAvailableTimeSlots(
-  //     BuildContext context, DateTime? selectedDay) async {
-  //   var availableSlots = await context
-  //       .read<BookingService>()
-  //       .getAvailableTimeSlots(selectedDay ?? DateTime.now());
-  //   var result = availableSlots.map((e) {
-  //     return e['hour'].toString().padLeft(2, '0') +
-  //         ':' +
-  //         e['minute'].toString().padLeft(2, '0');
-  //   }).toList();
-  //   result.sort();
-  //
-  //   return result;
-  // }
 }

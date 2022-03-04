@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-const kPrimaryColor = Color(0xFF392626);
+const kPrimaryColor = Color(0xFF795548);
 const kSecondaryColor = Color(0xFFFE9901);
 const kContentColorLightTheme = Color(0xFF1D1D35);
 const kContentColorDarkTheme = Color(0xFFF5FCF9);
@@ -11,6 +11,14 @@ const kErrorColor = Color(0xFFF03738);
 ThemeData lightThemeData(BuildContext context) {
 
   return ThemeData.light().copyWith(
+      buttonTheme: ButtonThemeData(
+        buttonColor: Colors.yellow[100],
+        shape: RoundedRectangleBorder(
+          borderRadius: new BorderRadius.circular(15.0),
+          side: BorderSide(color: Colors.brown),
+        ),
+        padding: EdgeInsets.all(10.0),
+      ),
     primaryColor: kPrimaryColor,
     scaffoldBackgroundColor: Colors.white,
     appBarTheme: appBarTheme,
@@ -21,7 +29,6 @@ ThemeData lightThemeData(BuildContext context) {
       primary: kPrimaryColor,
       secondary: kSecondaryColor,
       error: kErrorColor,
-
     ),
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
       backgroundColor: Colors.white,

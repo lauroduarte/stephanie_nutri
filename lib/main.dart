@@ -13,6 +13,8 @@ import 'package:stephanie_nutri/services/booking_services.dart';
 import 'package:stephanie_nutri/services/users_services.dart';
 import 'package:stephanie_nutri/themes/theme.dart';
 
+import 'models/booking_model.dart';
+import 'models/booking_stepper_model.dart';
 import 'models/time_slot.dart';
 
 Future<void> main() async {
@@ -38,6 +40,12 @@ class MyApp extends StatelessWidget {
         ),
         Provider<BookingService>(
           create: (_) => BookingService(),
+        ),
+        ChangeNotifierProvider<BookingModel>(
+          create: (_) => BookingModel(),
+        ),
+        ChangeNotifierProvider<BookingStepperModel>(
+          create: (_) => BookingStepperModel(),
         ),
         StreamProvider(
           initialData: null,
