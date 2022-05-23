@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stephanie_nutri/screens/booking_stepper.dart';
 
+import '../models/app_user.dart';
 import '../services/authentication_services.dart';
 import 'booking.dart';
 
@@ -21,6 +22,7 @@ class Welcome extends StatelessWidget {
           child: Column(
         children: [
           Text('Olá ${FirebaseAuth.instance.currentUser!.displayName}'),
+          Text('Você nascido em ${context.watch<AppUser>().birthDate}'),
           Text("Vamos agendar uma consulta",
               style: GoogleFonts.lato(
                 fontSize: 35,

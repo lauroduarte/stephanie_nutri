@@ -1,16 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 class AppUser {
-  final String? displayName;
-  final String? fullName;
-  final String? email;
-  final bool? emailVerified;
-  final String? phoneNumber;
-  final String? photoURL;
-  final String? uid;
-  final String? cpf;
-  final String? birthDate;
-  final String? gender;
+  String? displayName;
+  String? fullName;
+  String? email;
+  bool? emailVerified;
+  String? phoneNumber;
+  String? photoURL;
+  String? uid;
+  String? cpf;
+  String? birthDate;
+  String? gender;
 
   AppUser(
       {this.displayName,
@@ -36,4 +35,30 @@ class AppUser {
         birthDate: document['birthDate'],
         gender: document['gender']);
   }
+
+  void updateFromDocument(DocumentSnapshot document) {
+    displayName = document['displayName'];
+    fullName = document['fullName'];
+    email = document['email'];
+    emailVerified = document['emailVerified'];
+    phoneNumber = document['phoneNumber'];
+    uid = document['uid'];
+    cpf = document['cpf'];
+    birthDate = document['birthDate'];
+    gender = document['gender'];    
+  }
+
+  void copy(AppUser? appUserToCopy) {
+    if(appUserToCopy != null){
+      displayName = appUserToCopy.displayName;
+      fullName = appUserToCopy.fullName;
+      email = appUserToCopy.email;
+      emailVerified = appUserToCopy.emailVerified;
+      phoneNumber = appUserToCopy.phoneNumber;
+      uid = appUserToCopy.uid;
+      cpf = appUserToCopy.cpf;
+      birthDate = appUserToCopy.birthDate;
+      gender = appUserToCopy.gender;    
+    }
+  }  
 }

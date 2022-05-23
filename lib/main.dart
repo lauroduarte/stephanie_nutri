@@ -1,15 +1,16 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:stephanie_nutri/models/app_user.dart';
+import 'package:stephanie_nutri/models/checkout_model.dart';
 
 import 'package:stephanie_nutri/services/authentication_services.dart';
 import 'package:stephanie_nutri/screens/home_page.dart';
 import 'package:stephanie_nutri/screens/sign_in.dart';
 import 'package:stephanie_nutri/services/booking_services.dart';
+import 'package:stephanie_nutri/services/payment_services.dart';
 import 'package:stephanie_nutri/services/users_services.dart';
 import 'package:stephanie_nutri/themes/theme.dart';
 
@@ -41,8 +42,17 @@ class MyApp extends StatelessWidget {
         Provider<BookingService>(
           create: (_) => BookingService(),
         ),
+        Provider<PaymentService>(
+          create: (_) => PaymentService(),
+        ),
+        Provider<AppUser>(
+          create: (_) => AppUser(),
+        ),
         ChangeNotifierProvider<BookingModel>(
           create: (_) => BookingModel(),
+        ),
+        ChangeNotifierProvider<CheckoutModel>(
+          create: (_) => CheckoutModel(),
         ),
         ChangeNotifierProvider<BookingStepperModel>(
           create: (_) => BookingStepperModel(),
@@ -53,7 +63,8 @@ class MyApp extends StatelessWidget {
               context.read<AuthenticationService>().authStateChanges,
         ),
         StreamProvider<List<TimeSlot>>(
-          create: (context) => context.read<BookingService>().availableTimeSlots,
+          create: (context) =>
+              context.read<BookingService>().availableTimeSlots,
           initialData: [],
         ),
       ],
@@ -73,7 +84,24 @@ class AuthenticationWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User?>();
     if (firebaseUser != null) {
-      return HomePage();
+      return FutureBuilder<AppUser?>(
+          future: context.watch<UserService>().getUserByUid(firebaseUser.uid),
+          builder: (BuildContext context, AsyncSnapshot<AppUser?> snapshot) {
+            Widget child;
+            if (snapshot.hasData) {
+              context.watch<AppUser>().copy(snapshot.data);
+              child = HomePage();
+            } else {
+              child = Center(
+                child: SizedBox(
+                  width: 60,
+                  height: 60,
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+            return child;
+          });
     }
     return SignIn();
   }

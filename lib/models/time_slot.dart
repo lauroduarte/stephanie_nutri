@@ -2,10 +2,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class TimeSlot{
   String? uid;
-  bool? booked;
   DateTime? date;
   int? hour;
   int? minute;
+  String? status;
+  String? clientUid;
+
+  static const available = 'available';
+  static const reserved = 'reserved';
+  static const confirmed = 'confirmed';
+  static const unavailable = 'unavailable';
 
   String get asString {
     return hour.toString().padLeft(2, '0') +
@@ -13,15 +19,16 @@ class TimeSlot{
         minute.toString().padLeft(2, '0');
   }
 
-  TimeSlot({this.uid, this.booked, this.date, this.hour, this.minute});
+  TimeSlot({this.uid, this.clientUid, this.date, this.hour, this.minute, this.status});
 
   factory TimeSlot.fromDocument(DocumentSnapshot document){
     return TimeSlot(
       uid: document.id,
-      booked: document['booked'],
+      clientUid: document['clientUid'],
       date: DateTime.parse(document['date'].toDate().toString()),
       hour: document['hour'],
-      minute: document['minute']
+      minute: document['minute'],
+      status: document['status'],
     );
   }
 

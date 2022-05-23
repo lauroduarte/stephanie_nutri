@@ -5,6 +5,7 @@ import 'package:stephanie_nutri/screens/forgot_password.dart';
 import 'package:stephanie_nutri/screens/sign_up.dart';
 
 import '../exceptions/app_exception.dart';
+import '../models/app_user.dart';
 import '../services/authentication_services.dart';
 
 class SignIn extends StatelessWidget {
@@ -92,8 +93,6 @@ class SignIn extends StatelessWidget {
                           email: _emailController.text,
                           password: _passController.text,
                         );
-
-
                       } on AppException catch(e){
                         if (!currentFocus.hasPrimaryFocus) {
                           currentFocus.unfocus();

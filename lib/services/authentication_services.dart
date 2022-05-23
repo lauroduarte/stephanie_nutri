@@ -14,11 +14,12 @@ class AuthenticationService {
 
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
 
-  Future<void> signIn(
+  Future<AppUser?> signIn(
       {required String email, required String password}) async {
     try {
-      await _firebaseAuth.signInWithEmailAndPassword(
+      UserCredential userCredential = await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
+      return await _userService.getUserByUid(userCredential.user!.uid);
     } on FirebaseAuthException catch (e) {
       throw AppException.fromFirebaseAuth(e);
     } on FirebaseException catch (e){
@@ -36,7 +37,9 @@ class AuthenticationService {
     } //TODO tratar exceções no geral
   }
 
-  Future<void> signUp(
+
+//TODO: displayName não está sendo gravado 
+  Future<AppUser?> signUp(
       {required String email, required String password,
         String? displayName,
         String? fullName,
@@ -60,6 +63,17 @@ class AuthenticationService {
         birthDate: birthDate,
         gender: gender
       );
+
+      return AppUser(
+            email: _userCredential.user!.email,
+            uid: _userCredential.user!.uid,
+            displayName: _userCredential.user!.displayName,
+            fullName: _userCredential.user!.displayName,
+            emailVerified: _userCredential.user!.emailVerified,
+            phoneNumber: _userCredential.user!.phoneNumber,
+            photoURL: _userCredential.user!.photoURL,
+          );
+
     } on FirebaseAuthException catch (e) {
       throw AppException.fromFirebaseAuth(e);
     } on FirebaseException catch (e){
@@ -67,7 +81,7 @@ class AuthenticationService {
     } //TODO tratar exceções no geral
   }
 
-  Future<void> signInWithGoogle() async {
+  Future<AppUser?> signInWithGoogle() async {
     try {
       // Trigger the authentication flow
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
@@ -86,7 +100,7 @@ class AuthenticationService {
           await FirebaseAuth.instance.signInWithCredential(credential);
 
       //Salva o usuário caso não exista na base
-      await saveUser(userCredential);
+      return await saveUser(userCredential);
 
     } on FirebaseAuthException catch (e) {
       throw AppException.fromFirebaseAuth(e);
@@ -95,7 +109,7 @@ class AuthenticationService {
     } //TODO tratar exceções no geral
   }
 
-  Future<void> signInWithFacebook() async {
+  Future<AppUser?> signInWithFacebook() async {
     try {
       // Trigger the sign-in flow
       final LoginResult loginResult = await FacebookAuth.instance.login();
@@ -110,7 +124,7 @@ class AuthenticationService {
             .signInWithCredential(facebookAuthCredential);
 
         //Salva o usuário caso não exista na base
-        await saveUser(userCredential);
+        return await saveUser(userCredential);
       } else if(loginResult.status == LoginStatus.failed){
         print('passou');
         throw AppException(message: 'Não foi possível realizar o login');
@@ -139,7 +153,7 @@ class AuthenticationService {
     } //TODO tratar exceções no geral
   }
 
-  Future<void> saveUser(UserCredential userCredential) async {
+  Future<AppUser?> saveUser(UserCredential userCredential) async {
     //Verifica se usuário existe no banco de dados e salvar caso ainda não exista
     AppUser? appUser;
     if (userCredential != null && userCredential.user != null) {
@@ -153,7 +167,19 @@ class AuthenticationService {
             fullName: userCredential.user!.displayName,
             emailVerified: userCredential.user!.emailVerified,
             phoneNumber: userCredential.user!.phoneNumber,
-            photoURL: userCredential.user!.photoURL);
+            photoURL: userCredential.user!.photoURL,
+          );
+        return AppUser(
+            email: userCredential.user!.email,
+            uid: userCredential.user!.uid,
+            displayName: userCredential.user!.displayName,
+            fullName: userCredential.user!.displayName,
+            emailVerified: userCredential.user!.emailVerified,
+            phoneNumber: userCredential.user!.phoneNumber,
+            photoURL: userCredential.user!.photoURL,
+          );          
+      }else{
+        return appUser;
       }
     }
   }
